@@ -12,15 +12,15 @@ class StartQuiz:
         self.start_frame.grid()
 
         # strings for labels
-        intro_string = ("In this quiz, you will have to answer questions based on the Japanese defense based martial art; Aikido. "
-                        "\nThe questions will be on the practical translations of many different parts of Aikido. ")
+        intro_string = ("In this quiz, you will have to answer questions based on the Japanese defense based martial \n"
+                        "art Aikido. The questions will be on the practical translations of many different parts of Aikido. ")
 
         choose_string = "How many questions do you want to answer? (Maximum of 40)"
 
         # list of labels to be made (text | font | fg)
         start_labels_list = [
             ["Aikido Quiz", ("Arial", 16, "bold"), None],
-            [intro_string, ("Arial", 12, "bold"), None],
+            [intro_string, ("Arial", 12), None],
             [choose_string, ("Arial", 12, "bold"), "#009900"]
         ]
 
@@ -59,7 +59,7 @@ class StartQuiz:
         amt_requested = self.num_questions_entry.get()
 
         # reset label and entry box (for when users come back to home screen)
-        self.choose_label.config(fg="#009900", font=("Arial", 12, "bold"))
+        self.choose_label.config(text="How many questions do you want to answer? (Maximum of 40)", fg="#009900", font=("Arial", 12, "bold"))
         self.num_questions_entry.config(bg="#FFFFFF")
 
         # error checker
@@ -89,18 +89,18 @@ class StartQuiz:
 
 
 class Play:
-    """ Interface for playing the Aikido Quiz itself """
+    """ Placeholder interface for playing the Aikido Quiz itself """
 
     def __init__(self, how_many):
         self.play_box = Toplevel()
 
-        self.game_frame = Frame(self.play_box)
-        self.game_frame.grid(padx=10, pady=10)
+        self.quiz_frame = Frame(self.play_box)
+        self.quiz_frame.grid(padx=10, pady=10)
 
-        self.game_heading_label = Label(self.game_frame, text=f"Round 0 of {how_many}", font=("Arial", 16, "bold"))
-        self.game_heading_label.grid(row=0)
+        self.quiz_heading_label = Label(self.quiz_frame, text=f"Question 0 of {how_many}", font=("Arial", 16, "bold"))
+        self.quiz_heading_label.grid(row=0)
 
-        self.end_game_button = Button(self.game_frame, text="End Game", font=("Arial", 16, "bold"), fg="#FFFFFF",
+        self.end_game_button = Button(self.quiz_frame, text="End Quiz", font=("Arial", 16, "bold"), fg="#FFFFFF",
                                       bg="#990000", width=10,
                                       command=self.close_play)
         self.end_game_button.grid(row=1)
