@@ -40,9 +40,9 @@ class Play:
 
         # list for label details (text | font | background | row)
         play_labels_list = [
-            ["Question # out of #", ("Arial", 16, "bold"), None, 0],
-            ["Score to beat: #", body_font, "#FFF2CC", 1],
-            ["Choose an option below. Good luck.", body_font, "#D5E8D4", 2],
+            ["Aikido Quiz", ("Arial", 16, "bold"), None, 0],
+            ["Question # out of #", body_font, "#FFF2CC", 1],
+            ["Question goes here", "Arial", 14, "#D5E8D4", 2],
             ["You chose, result", body_font, "#D5E8D4", 4]
         ]
 
@@ -64,7 +64,7 @@ class Play:
 
         # create 4 buttons in a 2x2 grid
         for item in range(0, 4):
-            self.colour_button = Button(self.colour_frame, font=body_font, text="Colour Name", width=15)
+            self.colour_button = Button(self.colour_frame, font=body_font, text="Option Name", width=15)
             self.colour_button.grid(row=item // 2, column=item % 2, padx=5, pady=5)
 
         # frame to hold hints and stats buttons
@@ -73,7 +73,7 @@ class Play:
 
         # list for buttons (frame | text | bg | command | width | row | column)
         control_button_list = [
-            [self.quiz_frame, "Next Round", "#0057D8", "", 21, 5, None],
+            [self.quiz_frame, "Next Question", "#0057D8", "", 21, 5, None],
             [self.hints_stats_frame, "Hints", "#FF8000", "", 10, 0, 0],
             [self.hints_stats_frame, "Stats", "#333333", "", 10, 0, 1],
             [self.quiz_frame, "End", "#990000", self.close_play, 21, 7, None]
@@ -93,3 +93,11 @@ class Play:
         # reshow root (choose rounds) and end current game / allow new game to start
         root.deiconify()
         self.play_box.destroy()
+
+
+# main routine
+if __name__ == "__main__":
+    root = Tk()
+    root.title("Colour Quest")
+    StartGame()
+    root.mainloop()
