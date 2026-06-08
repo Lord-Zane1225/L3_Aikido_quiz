@@ -1,16 +1,6 @@
 import csv
 import random
 
-def round_ans(val):
-    """
-    Rounds temperatures to nearest degree
-    :param val: number to be rounded
-    :return: number rounded to nearest degree
-    """
-    var_rounded = (val * 2 + 1) // 2
-    return "{:.0f}".format(var_rounded)
-
-
 # retrieve colours from csv file and put them in a list
 file = open("quiz/Aikido Quiz Database.csv", "r")
 all_questions = list(csv.reader(file, delimiter=","))
