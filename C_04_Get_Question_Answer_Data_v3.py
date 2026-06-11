@@ -17,7 +17,7 @@ quiz_question_chosen = random.choice(all_questions)
 # loop until we have three incorrect options
 while len(answer_options) < 3:
     potential_option = random.choice(all_questions)
-    if potential_option in answer_options or potential_option == quiz_question_chosen:
+    if potential_option[2] in answer_options or potential_option == quiz_question_chosen:
         print(potential_option)
     else:
         answer_options.append(potential_option[2])
@@ -29,3 +29,4 @@ print(quiz_question_chosen)
 print()
 print(answer_options)
 
+# make sure if statement is looking for the equivalent part of quiz question chosen
