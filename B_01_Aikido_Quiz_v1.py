@@ -3,8 +3,10 @@ from functools import partial  # to prevent unwanted windows
 import csv
 import random
 
-def get_question_answer():
-    # retrieve colours from csv file and put them in a list
+def get_question_answer(self):
+    """ Get 1 question and 3 options for the quiz from the database """
+
+    # retrieve options from csv file and put them in a list
     file = open("Aikido Quiz Database.csv", "r")
     all_questions = list(csv.reader(file, delimiter=","))
     file.close()
@@ -27,6 +29,9 @@ def get_question_answer():
 
     # add correct answer to a random place in the answer options
     answer_options.insert(random.randint(0, 4), quiz_question_chosen[2])
+
+    # return question and options
+    return quiz_question_chosen[1, 2], answer_options
 
 
 class StartQuiz:
@@ -131,7 +136,7 @@ class Play:
         play_labels_list = [
             ["Aikido Quiz", ("Arial", 16, "bold"), None, 0],
             ["Question # out of #", body_font, "#FFF2CC", 1],
-            ["Question goes here", ("Arial", 14), "#D5E8D4", 2],
+            ["What is the practical translation for #?", ("Arial", 14), "#D5E8D4", 2],
             ["You chose, result", body_font, "#D5E8D4", 4]
         ]
 
@@ -145,16 +150,17 @@ class Play:
         # retrieve labels so they can be configured later
         self.heading_label = play_labels_ref[0]
         self.target_label = play_labels_ref[1]
+        self.question_label = play_labels_ref[2]
         self.results_label = play_labels_ref[3]
 
         # set up colour buttons
-        self.colour_frame = Frame(self.quiz_frame)
-        self.colour_frame.grid(row=3)
+        self.option_frame = Frame(self.quiz_frame)
+        self.option_frame.grid(row=3)
 
         # create 4 buttons in a 2x2 grid
         for item in range(0, 4):
-            self.colour_button = Button(self.colour_frame, font=body_font, text="Option Name", width=15)
-            self.colour_button.grid(row=item // 2, column=item % 2, padx=5, pady=5)
+            self.option_button = Button(self.option_frame, font=body_font, text="Option Name", width=15)
+            self.option_button.grid(row=item // 2, column=item % 2, padx=5, pady=5)
 
         # frame to hold hints and stats buttons
         self.hints_stats_frame = Frame(self.quiz_frame)
@@ -177,7 +183,6 @@ class Play:
 
             control_ref_list.append(make_control_button)
 
-
     def close_play(self):
         # reshow root (choose rounds) and end current game / allow new game to start
         root.deiconify()
@@ -191,4 +196,19 @@ if __name__ == "__main__":
     root.title("Aikido Quiz")
     StartQuiz()
     root.mainloop()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
