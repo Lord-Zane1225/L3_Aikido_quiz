@@ -124,10 +124,24 @@ class Play:
     """ Interface for playing the colour quest game """
 
     def __init__(self, how_many):
+
+        # Integers / String Variables
+        # rounds played - start with zero
+        self.questions_attempted = IntVar() # rounds_played in colour quest
+        self.questions_attempted.set(0)
+
+        self.questions_wanted = IntVar() # rounds_wanted
+        self.questions_wanted.set(how_many)
+
+        self.questions_correct = IntVar() # rounds_won
+
         self.play_box = Toplevel()
 
         self.quiz_frame = Frame(self.play_box)
         self.quiz_frame.grid(padx=10, pady=10)
+
+        # if users press the 'x' on the game window, end the entire game
+        self.play_box.protocol('WM_DELETE_WINDOW', root.destroy)
 
         # body font for most labels
         body_font = ("Arial", 12)
@@ -136,7 +150,7 @@ class Play:
         play_labels_list = [
             ["Aikido Quiz", ("Arial", 16, "bold"), None, 0],
             ["Question # out of #", body_font, "#FFF2CC", 1],
-            ["What is the practical translation for #?", ("Arial", 14), "#D5E8D4", 2],
+            ["What is the practical translation for\n#?", ("Arial", 14), "#D5E8D4", 2],
             ["You chose, result", body_font, "#D5E8D4", 4]
         ]
 
@@ -145,7 +159,7 @@ class Play:
             self.make_label = Label(self.quiz_frame, text=item[0], font=item[1], bg=item[2], wraplength=300, justify="left")
             self.make_label.grid(row=item[3], pady=10, padx=10)
 
-            play_labels_ref.append(item)
+            play_labels_ref.append(self.make_label)
 
         # retrieve labels so they can be configured later
         self.heading_label = play_labels_ref[0]
@@ -157,10 +171,14 @@ class Play:
         self.option_frame = Frame(self.quiz_frame)
         self.option_frame.grid(row=3)
 
+        self.option_button_ref = []
+
         # create 4 buttons in a 2x2 grid
         for item in range(0, 4):
             self.option_button = Button(self.option_frame, font=body_font, text="Option Name", width=15)
             self.option_button.grid(row=item // 2, column=item % 2, padx=5, pady=5)
+
+            self.option_button_ref.append(self.option_button)
 
         # frame to hold hints and stats buttons
         self.hints_stats_frame = Frame(self.quiz_frame)
@@ -168,7 +186,7 @@ class Play:
 
         # list for buttons (frame | text | bg | command | width | row | column)
         control_button_list = [
-            [self.quiz_frame, "Next Question", "#0057D8", "", 21, 5, None],
+            [self.quiz_frame, "Next Question", "#0057D8", self.new_question, 21, 5, None],
             [self.hints_stats_frame, "Hints", "#FF8000", "", 10, 0, 0],
             [self.hints_stats_frame, "Stats", "#333333", "", 10, 0, 1],
             [self.quiz_frame, "End", "#990000", self.close_play, 21, 7, None]
@@ -182,6 +200,39 @@ class Play:
             make_control_button.grid(row=item[5], column=item[6], padx=5, pady=5)
 
             control_ref_list.append(make_control_button)
+
+        # retrieve next, stats and end button so that they can be configured
+        self.next_button = control_ref_list[0]
+        self.hints_button = control_ref_list[1]
+        self.stats_button = control_ref_list[2]
+        self.end_game_button = control_ref_list[3]
+
+        self.stats_button.config(state=DISABLED)
+
+        # Once interface has been created, invoke new question function for first question
+        self.new_question()
+
+
+    def new_question(self):
+        """ Makes a question and asks the user. puts options into the buttons. """
+
+        # retrieve number of rounds played, add one to it and configure heading
+        questions_attempted = self.questions_attempted.get()
+        self.questions_attempted.set(questions_attempted)
+
+        questions_wanted = self.questions_wanted.get()
+
+        # update heading and score to beat labels. "Hide" results label
+        self.target_label.config(text=f"Question {questions_attempted + 1} out of {questions_wanted}")
+        self.results_label.config(text=f"{'=' * 7}", bg="#F0F0F0")
+
+        # configure buttons using foreground and background colours from list
+        # enable colour buttons (disabled at the end of the last round)
+        for count, item in enumerate(self.option_button_ref):
+            item.config(fg=self.round_colour_list[count][2], bg=self.round_colour_list[count][0],
+                        text=self.round_colour_list[count][0], state=NORMAL)
+
+        self.next_button.config(state=DISABLED)
 
     def close_play(self):
         # reshow root (choose rounds) and end current game / allow new game to start
