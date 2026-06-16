@@ -3,6 +3,8 @@ from functools import partial  # to prevent unwanted windows
 import csv
 import random
 
+from quiz.C_04_Get_Question_Answer_Data_v2 import quiz_question_chosen
+
 def get_question_answer(self):
     """ Get 1 question and 3 options for the quiz from the database """
 
@@ -15,23 +17,32 @@ def get_question_answer(self):
     all_questions.pop(0)
 
     answer_options = []
+    quiz_question_chosen_func = []
+    to_return = []
 
     # pick a question
-    quiz_question_chosen = random.choice(all_questions)
+    quiz_question_chosen_func.append(random.choice(all_questions))
 
     # loop until we have three incorrect options
     while len(answer_options) < 3:
         potential_option = random.choice(all_questions)
-        if potential_option[2] in answer_options or potential_option == quiz_question_chosen:
+        print(potential_option)
+        if potential_option[1] in answer_options or potential_option == quiz_question_chosen_func[1]:
             print(potential_option)
         else:
-            answer_options.append(potential_option[2])
+            print(potential_option)
+            answer_options.append(potential_option[1])
 
     # add correct answer to a random place in the answer options
-    answer_options.insert(random.randint(0, 4), quiz_question_chosen[2])
+    answer_options.insert(random.randint(0, 4), quiz_question_chosen_func[1])
 
     # return question and options
-    return quiz_question_chosen[1, 2], answer_options
+    for item in quiz_question_chosen_func:
+        to_return.append(item)
+    for item in answer_options:
+        to_return.append(item)
+    print(to_return)
+    return to_return
 
 
 class StartQuiz:
@@ -135,6 +146,9 @@ class Play:
 
         self.questions_correct = IntVar() # rounds_won
 
+        # lists
+        self.question_and_answer_list = []
+
         self.play_box = Toplevel()
 
         self.quiz_frame = Frame(self.play_box)
@@ -222,6 +236,10 @@ class Play:
 
         questions_wanted = self.questions_wanted.get()
 
+        # get question and options
+        self.question_and_answer_list = get_question_answer(self)
+        print(self.question_and_answer_list)
+
         # update heading and score to beat labels. "Hide" results label
         self.target_label.config(text=f"Question {questions_attempted + 1} out of {questions_wanted}")
         self.results_label.config(text=f"{'=' * 7}", bg="#F0F0F0")
@@ -229,8 +247,8 @@ class Play:
         # configure buttons using foreground and background colours from list
         # enable colour buttons (disabled at the end of the last round)
         for count, item in enumerate(self.option_button_ref):
-            item.config(fg=self.round_colour_list[count][2], bg=self.round_colour_list[count][0],
-                        text=self.round_colour_list[count][0], state=NORMAL)
+            # fg=self.question_and_answer_list[count][2], bg=self.question_and_answer_list[count][0],
+            item.config(text=self.question_and_answer_list[count][2], state=NORMAL)
 
         self.next_button.config(state=DISABLED)
 
