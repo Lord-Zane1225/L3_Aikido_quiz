@@ -3,7 +3,8 @@ from functools import partial  # to prevent unwanted windows
 import csv
 import random
 
-from quiz.C_04_Get_Question_Answer_Data_v2 import quiz_question_chosen
+# imports component, giving correct answer (for some reason necessary for the program to work? since it works im not complaining)
+from quiz.C_04_Get_Question_Answer_Data_v3 import quiz_question_chosen_func
 
 def get_question_answer(self):
     """ Get 1 question and 3 options for the quiz from the database """
@@ -17,20 +18,14 @@ def get_question_answer(self):
     all_questions.pop(0)
 
     answer_options = []
-    quiz_question_chosen_func = []
     to_return = []
-
-    # pick a question
-    quiz_question_chosen_func.append(random.choice(all_questions))
 
     # loop until we have three incorrect options
     while len(answer_options) < 3:
         potential_option = random.choice(all_questions)
-        print(potential_option)
         if potential_option[1] in answer_options or potential_option == quiz_question_chosen_func[1]:
-            print(potential_option)
+            print("duplicate", potential_option)
         else:
-            print(potential_option)
             answer_options.append(potential_option[1])
 
     # add correct answer to a random place in the answer options
@@ -41,7 +36,6 @@ def get_question_answer(self):
         to_return.append(item)
     for item in answer_options:
         to_return.append(item)
-    print(to_return)
     return to_return
 
 
@@ -246,10 +240,10 @@ class Play:
 
         # configure buttons using foreground and background colours from list
         # enable colour buttons (disabled at the end of the last round)
+
         for count, item in enumerate(self.option_button_ref):
             # fg=self.question_and_answer_list[count][2], bg=self.question_and_answer_list[count][0],
-            item.config(text=self.question_and_answer_list[count][2], state=NORMAL)
-
+            item.config(text=self.question_and_answer_list[count][1], state=NORMAL)
         self.next_button.config(state=DISABLED)
 
     def close_play(self):
