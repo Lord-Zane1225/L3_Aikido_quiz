@@ -12,21 +12,20 @@ all_questions.pop(0)
 answer_options = []
 
 # pick a question
-quiz_question_chosen = random.choice(all_questions)
+quiz_question_chosen_func = random.choice(all_questions)
 
 # loop until we have three incorrect options
 while len(answer_options) < 3:
     potential_option = random.choice(all_questions)
-    if potential_option[2] in answer_options or potential_option == quiz_question_chosen:
+    if potential_option[1] in answer_options or potential_option == quiz_question_chosen_func:
         print(potential_option)
     else:
-        answer_options.append(potential_option[2])
+        answer_options.append(potential_option[1])
 
 # add correct answer to a random place in the answer options
-answer_options.insert(random.randint(0, 4), quiz_question_chosen[2])
+answer_options.insert(random.randint(0, 4), quiz_question_chosen_func[1])
 
-print(quiz_question_chosen)
-print()
-print(answer_options)
+# print(quiz_question_chosen_func)
+# print()
+# print(answer_options)
 
-# make sure if statement is looking for the equivalent part of quiz question chosen
