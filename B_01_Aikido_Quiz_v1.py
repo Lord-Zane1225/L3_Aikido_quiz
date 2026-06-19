@@ -6,6 +6,7 @@ import random
 # imports component, giving correct answer (for some reason necessary for the program to work? since it works im not complaining)
 from quiz.C_04_Get_Question_Answer_Data_v3 import quiz_question_chosen_func
 
+
 def get_question_answer(self):
     """ Get 1 question and 3 options for the quiz from the database """
 
@@ -24,7 +25,7 @@ def get_question_answer(self):
     while len(answer_options) < 3:
         potential_option = random.choice(all_questions)
         if potential_option[1] in answer_options or potential_option == quiz_question_chosen_func[1]:
-            print("duplicate", potential_option)
+            pass
         else:
             answer_options.append(potential_option[1])
 
@@ -175,7 +176,7 @@ class Play:
         self.question_label = play_labels_ref[2]
         self.results_label = play_labels_ref[3]
 
-        # set up colour buttons
+        # set up option buttons
         self.option_frame = Frame(self.quiz_frame)
         self.option_frame.grid(row=3)
 
@@ -183,7 +184,7 @@ class Play:
 
         # create 4 buttons in a 2x2 grid
         for item in range(0, 4):
-            self.option_button = Button(self.option_frame, font=body_font, text="Option Name", width=15)
+            self.option_button = Button(self.option_frame, font=body_font, text="Option Name", width=15, height=2, wraplength=130)
             self.option_button.grid(row=item // 2, column=item % 2, padx=5, pady=5)
 
             self.option_button_ref.append(self.option_button)
@@ -232,19 +233,62 @@ class Play:
 
         # get question and options
         self.question_and_answer_list = get_question_answer(self)
-        print(self.question_and_answer_list)
+
+        # print for testing
+        print("list printed for testing purposes: ", self.question_and_answer_list)
 
         # update heading and score to beat labels. "Hide" results label
         self.target_label.config(text=f"Question {questions_attempted + 1} out of {questions_wanted}")
         self.results_label.config(text=f"{'=' * 7}", bg="#F0F0F0")
 
-        # configure buttons using foreground and background colours from list
-        # enable colour buttons (disabled at the end of the last round)
-
+        # configure buttons using background colours from list
+        # enable option buttons (disabled at the end of the last round)
+        button_colour_list = ["#C9A0DC", "#BDF6FE", "#98FB98", "#FFEE8C"]
         for count, item in enumerate(self.option_button_ref):
             # fg=self.question_and_answer_list[count][2], bg=self.question_and_answer_list[count][0],
-            item.config(text=self.question_and_answer_list[count][1], state=NORMAL)
+            item.config(text=self.question_and_answer_list[2+count], bg=button_colour_list[count], state=NORMAL)
         self.next_button.config(state=DISABLED)
+
+
+    def round_results(self, user_choice):
+        """
+        Retrieves which button was pushed (index 0 - 3), retrieves score
+        and then compares it with median, updates results and adds results
+        to stats list.
+        """
+        # get user answer based on button press
+        user_selection = self.option_button_ref[user_choice].cget('text')
+
+        # get correct answer
+        correct_answer = self.question_and_answer_list[1]
+
+        if user_selection == correct_answer:
+            result_text = f"Correct! "
+            result_bg = "#82B366"
+            self.all_scores_list.append(score)
+
+        else:
+            result_text = f"Oops! {user_selection} ({score}) is less than the target."
+            result_bg = "#F8CECC"
+            self.all_scores_list.append(0)
+
+        self.results_label.config(text=result_text, bg=result_bg)
+
+        # enable stats and next buttons, disable colour buttons
+        self.next_button.config(state=NORMAL)
+        self.stats_button.config(state=NORMAL)
+
+        # check to see if the game is over
+        rounds_played = self.rounds_played.get()
+        rounds_wanted = self.rounds_wanted.get()
+
+        if rounds_played == rounds_wanted:
+            self.next_button.config(state=DISABLED, text="Game Over")
+            self.end_game_button.config(text="Play Again", bg="#006600")
+
+        for item in self.colour_button_ref:
+            item.config(state=DISABLED)
+
 
     def close_play(self):
         # reshow root (choose rounds) and end current game / allow new game to start
