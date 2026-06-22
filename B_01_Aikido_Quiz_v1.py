@@ -3,9 +3,6 @@ from functools import partial  # to prevent unwanted windows
 import csv
 import random
 
-# imports component, giving correct answer (for some reason necessary for the program to work? since it works im not complaining)
-from quiz.C_04_Get_Question_Answer_Data_v3 import quiz_question_chosen_func
-
 
 def get_question_answer(self):
     """ Get 1 question and 3 options for the quiz from the database """
@@ -20,6 +17,7 @@ def get_question_answer(self):
 
     answer_options = []
     to_return = []
+    quiz_question_chosen_func = random.choice(all_questions)
 
     # loop until we have three incorrect options
     while len(answer_options) < 3:
@@ -139,7 +137,8 @@ class Play:
         self.questions_wanted = IntVar() # rounds_wanted
         self.questions_wanted.set(how_many)
 
-        self.questions_correct = IntVar() # rounds_won
+        self.questions_correct = IntVar()
+        self.questions_correct.set(0)
 
         # lists
         self.question_and_answer_list = []
@@ -184,7 +183,8 @@ class Play:
 
         # create 4 buttons in a 2x2 grid
         for item in range(0, 4):
-            self.option_button = Button(self.option_frame, font=body_font, text="Option Name", width=15, height=2, wraplength=130)
+            self.option_button = Button(self.option_frame, font=body_font, text="Option Name", width=15, height=2,
+                                        wraplength=130, command=partial(self.question_results, item))
             self.option_button.grid(row=item // 2, column=item % 2, padx=5, pady=5)
 
             self.option_button_ref.append(self.option_button)
@@ -225,7 +225,7 @@ class Play:
     def new_question(self):
         """ Makes a question and asks the user. puts options into the buttons. """
 
-        # retrieve number of rounds played, add one to it and configure heading
+        # retrieve number of questions answered, add one to it and configure heading
         questions_attempted = self.questions_attempted.get()
         self.questions_attempted.set(questions_attempted)
 
@@ -239,21 +239,21 @@ class Play:
 
         # update heading and score to beat labels. "Hide" results label
         self.target_label.config(text=f"Question {questions_attempted + 1} out of {questions_wanted}")
+        self.question_label.config(text=f"What is the practical translation for\n{self.question_and_answer_list[0]}?")
         self.results_label.config(text=f"{'=' * 7}", bg="#F0F0F0")
 
         # configure buttons using background colours from list
         # enable option buttons (disabled at the end of the last round)
         button_colour_list = ["#C9A0DC", "#BDF6FE", "#98FB98", "#FFEE8C"]
         for count, item in enumerate(self.option_button_ref):
-            # fg=self.question_and_answer_list[count][2], bg=self.question_and_answer_list[count][0],
             item.config(text=self.question_and_answer_list[2+count], bg=button_colour_list[count], state=NORMAL)
         self.next_button.config(state=DISABLED)
 
 
-    def round_results(self, user_choice):
+    def question_results(self, user_choice):
         """
-        Retrieves which button was pushed (index 0 - 3), retrieves score
-        and then compares it with median, updates results and adds results
+        Retrieves which button was pushed, retrieves correct answer
+        and then compares it with user's, updates results and adds
         to stats list.
         """
         # get user answer based on button press
@@ -262,32 +262,34 @@ class Play:
         # get correct answer
         correct_answer = self.question_and_answer_list[1]
 
+        # correct answer given
         if user_selection == correct_answer:
-            result_text = f"Correct! "
+            result_text = f"Correct! {user_selection} was the correct translation."
             result_bg = "#82B366"
-            self.all_scores_list.append(score)
+            right_answers = self.questions_correct.get()
+            right_answers += 1
+            self.questions_correct.set(right_answers)
 
+        # incorrect answer given
         else:
-            result_text = f"Oops! {user_selection} ({score}) is less than the target."
+            result_text = f"Oops! The correct answer is {correct_answer}, but you put {user_selection}."
             result_bg = "#F8CECC"
-            self.all_scores_list.append(0)
 
         self.results_label.config(text=result_text, bg=result_bg)
 
-        # enable stats and next buttons, disable colour buttons
+        # enable stats and next buttons, disable option buttons
         self.next_button.config(state=NORMAL)
         self.stats_button.config(state=NORMAL)
+        for item in self.option_button_ref:
+            item.config(state=DISABLED)
 
         # check to see if the game is over
-        rounds_played = self.rounds_played.get()
-        rounds_wanted = self.rounds_wanted.get()
+        rounds_played = self.questions_attempted.get()
+        rounds_wanted = self.questions_wanted.get()
 
         if rounds_played == rounds_wanted:
-            self.next_button.config(state=DISABLED, text="Game Over")
-            self.end_game_button.config(text="Play Again", bg="#006600")
-
-        for item in self.colour_button_ref:
-            item.config(state=DISABLED)
+            self.next_button.config(state=DISABLED, text="Quiz Complete")
+            self.end_game_button.config(text="Try Again", bg="#006600")
 
 
     def close_play(self):
