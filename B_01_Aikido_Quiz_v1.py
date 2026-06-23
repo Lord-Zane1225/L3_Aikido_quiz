@@ -227,6 +227,7 @@ class Play:
 
         # retrieve number of questions answered, add one to it and configure heading
         questions_attempted = self.questions_attempted.get()
+        questions_attempted += 1
         self.questions_attempted.set(questions_attempted)
 
         questions_wanted = self.questions_wanted.get()
@@ -238,7 +239,7 @@ class Play:
         print("list printed for testing purposes: ", self.question_and_answer_list)
 
         # update heading and score to beat labels. "Hide" results label
-        self.target_label.config(text=f"Question {questions_attempted + 1} out of {questions_wanted}")
+        self.target_label.config(text=f"Question {questions_attempted} out of {questions_wanted}")
         self.question_label.config(text=f"What is the practical translation for\n{self.question_and_answer_list[0]}?")
         self.results_label.config(text=f"{'=' * 7}", bg="#F0F0F0")
 
@@ -284,10 +285,10 @@ class Play:
             item.config(state=DISABLED)
 
         # check to see if the game is over
-        rounds_played = self.questions_attempted.get()
-        rounds_wanted = self.questions_wanted.get()
-
-        if rounds_played == rounds_wanted:
+        questions_attempted = self.questions_attempted.get()
+        questions_wanted = self.questions_wanted.get()
+        print("Questions attempted print for test", questions_attempted)
+        if questions_attempted == questions_wanted:
             self.next_button.config(state=DISABLED, text="Quiz Complete")
             self.end_game_button.config(text="Try Again", bg="#006600")
 
