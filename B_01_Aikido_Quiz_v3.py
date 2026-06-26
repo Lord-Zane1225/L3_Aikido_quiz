@@ -4,27 +4,21 @@ import csv
 import random
 
 
-def get_question_answer(self):
+def get_question_answer(self, all_questions):
     """ Get 1 question and 3 options for the quiz from the database """
-
-    # retrieve options from csv file and put them in a list
-    file = open("Aikido Quiz Database.csv", "r")
-    all_questions = list(csv.reader(file, delimiter=","))
-    file.close()
-
-    # remove the first row
-    all_questions.pop(0)
 
     answer_options = []
     to_return = []
     quiz_question_chosen_func = random.choice(all_questions)
 
+    # remove used question to prevent duplicates
+    all_questions.remove(quiz_question_chosen_func)
+    print(quiz_question_chosen_func, all_questions)
+
     # loop until we have three incorrect options
     while len(answer_options) < 3:
         potential_option = random.choice(all_questions)
-        if potential_option[1] in answer_options or potential_option == quiz_question_chosen_func[1]:
-            pass
-        else:
+        if potential_option[1] not in answer_options:
             answer_options.append(potential_option[1])
 
     # add correct answer to a random place in the answer options
@@ -51,7 +45,7 @@ class StartQuiz:
         intro_string = ("In this quiz, you will have to answer questions based on the Japanese defense based martial \n"
                         "art Aikido. The questions will be on the practical translations of many different parts of Aikido. ")
 
-        choose_string = "How many questions do you want to answer? (Maximum of 40)"
+        choose_string = "How many questions do you want to answer? (Maximum of 41)"
 
         # list of labels to be made (text | font | fg)
         start_labels_list = [
@@ -88,14 +82,14 @@ class StartQuiz:
     def question_checker(self):
         # error message
         has_errors = "no"
-        max_questions = 40
+        max_questions = 41
         error = f"Please enter an integer more than 0 and less than {max_questions + 1}."
 
         # get requested amount of questions
         amt_requested = self.num_questions_entry.get()
 
         # reset label and entry box (for when users come back to home screen)
-        self.choose_label.config(text="How many questions do you want to answer? (Maximum of 40)", fg="#009900", font=("Arial", 12, "bold"))
+        self.choose_label.config(text="How many questions do you want to answer? (Maximum of 41)", fg="#009900", font=("Arial", 12, "bold"))
         self.num_questions_entry.config(bg="#FFFFFF")
 
         # error checker
@@ -128,6 +122,13 @@ class Play:
     """ Interface for playing the colour quest game """
 
     def __init__(self, how_many):
+
+        # retrieve options from csv file and put them in a list
+        file = open("Aikido Quiz Database.csv", "r")
+        all_questions = list(csv.reader(file, delimiter=","))
+        file.close()
+        # remove the first row
+        all_questions.pop(0)
 
         # Integers / String Variables
         # rounds played - start with zero
@@ -191,7 +192,7 @@ class Play:
 
         # list for buttons (frame | text | bg | command | width | row | column)
         control_button_list = [
-            [self.quiz_frame, "Next Question", "#0057D8", self.new_question, 21, 5],
+            [self.quiz_frame, "Next Question", "#0057D8", lambda: self.new_question(all_questions), 21, 5],
             [self.quiz_frame, "Stats", "#333333", self.to_stats, 21, 6],
             [self.quiz_frame, "End", "#990000", self.close_play, 21, 7]
         ]
@@ -212,11 +213,13 @@ class Play:
 
         self.stats_button.config(state=DISABLED)
 
+
+
         # Once interface has been created, invoke new question function for first question
-        self.new_question()
+        self.new_question(all_questions)
 
 
-    def new_question(self):
+    def new_question(self, all_questions):
         """ Makes a question and asks the user. puts options into the buttons. """
 
         # retrieve number of questions answered, add one to it and configure heading
@@ -227,7 +230,7 @@ class Play:
         questions_wanted = self.questions_wanted.get()
 
         # get question and options
-        self.question_and_answer_list = get_question_answer(self)
+        self.question_and_answer_list = get_question_answer(self, all_questions)
 
         # print for testing
         print("list printed for testing purposes: ", self.question_and_answer_list)
