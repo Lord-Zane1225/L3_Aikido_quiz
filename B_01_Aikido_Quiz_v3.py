@@ -1,10 +1,9 @@
 from tkinter import *
 from functools import partial  # to prevent unwanted windows
-import csv
 import random
 
 
-def get_question_answer(self, all_questions):
+def get_question_answer (all_questions):
     """ Get 1 question and 3 options for the quiz from the database """
 
     answer_options = []
@@ -13,7 +12,6 @@ def get_question_answer(self, all_questions):
 
     # remove used question to prevent duplicates
     all_questions.remove(quiz_question_chosen_func)
-    print(quiz_question_chosen_func, all_questions)
 
     # loop until we have three incorrect options
     while len(answer_options) < 3:
@@ -123,13 +121,6 @@ class Play:
 
     def __init__(self, how_many):
 
-        # retrieve options from csv file and put them in a list
-        file = open("Aikido Quiz Database.csv", "r")
-        all_questions = list(csv.reader(file, delimiter=","))
-        file.close()
-        # remove the first row
-        all_questions.pop(0)
-
         # Integers / String Variables
         # rounds played - start with zero
         self.questions_attempted = IntVar() # rounds_played in colour quest
@@ -142,6 +133,24 @@ class Play:
         self.questions_correct.set(0)
 
         # lists
+        # hard coded questions to prevent quiz from crashing (rather than using a csv)
+        all_questions = [['Enemi', 'Sliding step'], ['Ayumi ashi', 'Stepping across'], ['Tenkai', '180 turn'],
+                         ['Tenkan', '180 turn, foot follows'], ['Irimi tenkan', 'Step, 180, foot follows'],
+                         ['Hantai ten kan', '90 turn'], ['Ukemi', 'Roll'], ['Ski', 'Jab'], ['Shiko', 'Knee walking'],
+                         ['Ikkyo', 'First pin'], ['Nikkyo', 'Second pin'], ['Sankkyo', 'Third pin'],
+                         ['Yonkkyo', 'Fourth pin'], ['Gokkyo', 'Fifth pin'], ['Shihonage', 'Throw of four directions'],
+                         ['Iriminage', 'Entering throw'], ['Kokyuho', 'Breathing throw'],
+                         ['Kotegeashi', 'Throw by twisting the wrist'], ['Taisubaki', 'Footwork'],
+                         ['Shomenuchi', 'Chopping strike'], ['Katate dori', 'Mirrored grab'],
+                         ['Ryotedori', 'Two handed grab'], ['Kata dori', 'Clothing grab'], ['Mai', 'Forwards'],
+                         ['Ushero', 'Backwards'], ['Nage', 'Thrower'], ['Uke', 'Faller'], ['Seiza', 'Seated on knees'],
+                         ['Keiza', 'Seated on knees, toes up'], ['Rei', 'Bow'], ['Omote', 'In front'],
+                         ['Ura', 'Behind'], ['Morote dori', 'Two to one grab'],
+                         ['Ushero ryotedori', 'Behind, two handed grab'], ['Sensei', 'Teacher'],
+                         ['Shihan', 'Master teacher'], ['Shoman', 'Founder'], ['Onegaishimasu', 'I humbly request'],
+                         ['Domo arigato gozaimasu', 'Thank you very much'],
+                         ['Aikido', 'Way of unifying with the spirit']]
+
         self.question_and_answer_list = []
 
         self.play_box = Toplevel()
@@ -213,8 +222,6 @@ class Play:
 
         self.stats_button.config(state=DISABLED)
 
-
-
         # Once interface has been created, invoke new question function for first question
         self.new_question(all_questions)
 
@@ -230,10 +237,7 @@ class Play:
         questions_wanted = self.questions_wanted.get()
 
         # get question and options
-        self.question_and_answer_list = get_question_answer(self, all_questions)
-
-        # print for testing
-        print("list printed for testing purposes: ", self.question_and_answer_list)
+        self.question_and_answer_list = get_question_answer(all_questions)
 
         # update heading and score to beat labels. "Hide" results label
         self.target_label.config(text=f"Question {questions_attempted} out of {questions_wanted}")
@@ -284,7 +288,6 @@ class Play:
         # check to see if the game is over
         questions_attempted = self.questions_attempted.get()
         questions_wanted = self.questions_wanted.get()
-        print("Questions attempted print for test", questions_attempted)
         if questions_attempted == questions_wanted:
             self.next_button.config(state=DISABLED, text="Quiz Complete")
             self.end_game_button.config(text="Try Again", bg="#006600")
